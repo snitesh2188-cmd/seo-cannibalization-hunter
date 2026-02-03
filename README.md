@@ -28,9 +28,8 @@ Clone this repository or download the ZIP file and extract it to a folder (e.g.,
 
 ### 2. Install Dependencies
 Open your terminal, navigate to the folder, and run:
-```bash
+
 pip install -r requirements.txt
-```bash
 
 ---
 
