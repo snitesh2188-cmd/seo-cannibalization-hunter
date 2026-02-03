@@ -13,7 +13,7 @@ st.markdown("Analyze keyword conflicts and track your progress over time.")
 
 # --- SIDEBAR CONFIGURATION ---
 st.sidebar.header("1. API Settings")
-property_uri = st.sidebar.text_input("GSC Property", value="sc-domain:growthops.asia", help="e.g. sc-domain:example.com")
+property_uri = st.sidebar.text_input("GSC Property", value="sc-domain:growthops.asia", help="e.g. sc-domain:example.com or https://example.com/")
 
 # Country List (ISO-3 Codes)
 country_map = {
@@ -196,33 +196,37 @@ def save_historical_data(domain, mode, metrics):
 
 # --- MAIN APP LOGIC ---
 
-# 1. GRAPHING SECTION (Shows strictly before processing if history exists)
+# 1. GRAPHING SECTION
 clean_name = get_clean_domain_name(property_uri)
 clean_mode = brand_mode.replace(" ", "").lower()
 history_file = f"cannibalisation/history/history-{clean_name}-{clean_mode}.csv"
 
 if os.path.exists(history_file):
-    st.subheader(f"📈 Progress Over Time: {clean_name}")
-    
-    hist_df = pd.read_csv(history_file)
-    hist_df['Date'] = pd.to_datetime(hist_df['Date'])
-    hist_df = hist_df.set_index('Date') # Set date as X-axis
-    
-    # Multi-select for metrics
-    available_metrics = ["Conflicted Keywords", "Total URLs Involved", "Wasted Impressions", "Potential Clicks (Est)"]
-    selected_metrics = st.multiselect("Select Metrics to Visualize:", available_metrics, default=["Conflicted Keywords", "Potential Clicks (Est)"])
-    
-    if selected_metrics:
-        st.line_chart(hist_df[selected_metrics])
-    
-    st.divider()
+    try:
+        st.subheader(f"📈 Progress Over Time: {clean_name}")
+        hist_df = pd.read_csv(history_file)
+        
+        # Ensure date parsing works
+        hist_df['Date'] = pd.to_datetime(hist_df['Date'])
+        hist_df = hist_df.set_index('Date')
+        
+        # Multi-select for metrics
+        available_metrics = ["Conflicted Keywords", "Total URLs Involved", "Wasted Impressions", "Potential Clicks (Est)"]
+        selected_metrics = st.multiselect("Select Metrics to Visualize:", available_metrics, default=["Conflicted Keywords", "Potential Clicks (Est)"])
+        
+        if selected_metrics:
+            st.line_chart(hist_df[selected_metrics])
+        
+        st.divider()
+    except Exception as e:
+        st.warning(f"Could not load graph history. (Error: {e})")
 
 # 2. PROCESSING BUTTON
 if st.sidebar.button("Start Processing"):
     with st.spinner(f'Connecting to GSC ({selected_country if selected_country else "Worldwide"})...'):
         
         if not os.path.exists('credentials.json'):
-            st.error("❌ 'credentials.json' file not found!")
+            st.error("❌ 'credentials.json' file not found! Please create one from Google Cloud Console.")
             st.stop()
             
         c_code = country_map[selected_country]
