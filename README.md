@@ -30,6 +30,9 @@ Clone this repository or download the ZIP file and extract it to a folder (e.g.,
 Open your terminal, navigate to the folder, and run:
 ```bash
 pip install -r requirements.txt
+```bash
+
+---
 
 **Set Up Google Cloud Credentials**
 ### 1.Go to the Google Cloud Console.
@@ -37,6 +40,8 @@ pip install -r requirements.txt
 ### 3.Create a Service Account (e.g., "seo-bot") and download the JSON key.
 ### 4.Rename the key to credentials.json and place it in the same folder as dashboard.py.
 Important: Copy the bot's email (seo-bot@...) and add it as a User (Owner) in your Google Search Console property settings.
+
+---
 
 **## ⚙️ How to Run**
 streamlit run dashboard.py
